@@ -1,7 +1,8 @@
 name: app_web_deploy
 
 on:
-  workflow_dispatch:
+  push:
+    branches: [ "main" ]
 
 permissions:
   contents: read
@@ -25,12 +26,15 @@ jobs:
         run: ./gradlew kotlinUpgradeYarnLock
 
       - name: Build web app
-        run: ./gradlew :example:composeApp:assemble
+        run: ./gradlew :composeApp:assemble
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: 'composeApp/build/dist/wasmJs/productionExecutable'
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v4
 
       - name: Deploy to GitHub Pages
         id: deployment
