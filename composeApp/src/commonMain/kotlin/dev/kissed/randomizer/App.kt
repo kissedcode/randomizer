@@ -46,7 +46,7 @@ private data class Member(
     val color: Color,
 )
 
-private val members = listOf("Денис", "Егор", "Ваня С.", "Ваня М.", "Женя", "Эмиль", "Серега")
+private val members = listOf("Денис", "Егор", "Ваня С.", "Ваня М.", "Женя", "Эмиль")
     .shuffled()
     .mapIndexed { idx, name ->
         Member(
@@ -120,7 +120,7 @@ fun App() {
                 .size(50.dp)
                 .rotate(180f)
                 .align(Alignment.Center)
-                .offset(x = -150.dp),
+                .offset(x = (-150).dp),
             contentDescription = null,
         )
     }
