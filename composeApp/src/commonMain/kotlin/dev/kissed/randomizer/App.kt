@@ -31,7 +31,10 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import randomizer.composeapp.generated.resources.Res
+import randomizer.composeapp.generated.resources.spiral
 import kotlin.random.Random
 
 private data class Member(
@@ -143,6 +146,10 @@ private fun BoxScope.FortuneWheel(items: List<Member>, currentId: Int?) {
                 }
             }
     ) {
+        Image(
+            painterResource(Res.drawable.spiral), null,
+            modifier = Modifier.align(Alignment.Center).size(50.dp)
+        )
         wheelModel.items.forEachIndexed { idx, member ->
             Box(
                 Modifier.matchParentSize().rotate(wheelModel.angles[idx].let { (it.first + it.second)/2 })
