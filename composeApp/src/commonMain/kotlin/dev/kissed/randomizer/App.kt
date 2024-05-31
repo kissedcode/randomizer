@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.random.Random
 
@@ -83,6 +84,13 @@ fun App() {
                 }
             )
     ) {
+        Text(
+            "Колесо закрутится - ситдаун замутится",
+            Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 50.dp),
+            fontSize = 20.sp,
+        )
         FortuneWheel(model.items, model.order?.first())    
     }
 }
