@@ -201,8 +201,9 @@ private fun BoxScope.FortuneWheel(items: List<Member>, currentId: Int?) {
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
                         .padding(end = 30.dp),
-                    color = if (current) Color.Cyan else Color.White,
+                    color = Color.White,
                     fontWeight = if (current) FontWeight.ExtraBold else FontWeight.Medium,
+                    fontSize = if (current) 18.sp else 15.sp,
                 )
             }
         }
