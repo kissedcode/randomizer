@@ -66,14 +66,17 @@ private val members = listOf("Денис", "Егор", "Ваня С.", "Ваня
 private data class ItemsModel(
     val items: List<Member>,
     val order: List<Int>?,
-)
+) {
+    val currentId: Int? = order?.first()
+    val current: Member? = currentId?.let { items.first { it.id == currentId } }
+}
 
 @Composable
 @Preview
 fun App() {
-    var model by remember {
-        mutableStateOf(ItemsModel(members, order = null))
-    }
+    var model by remember { mutableStateOf(ItemsModel(members, order = null)) }
+    var chosen by remember { mutableStateOf<List<Member>>(emptyList()) }
+    
     Column(
         Modifier.fillMaxSize()
             .background(Color.White),
@@ -95,6 +98,7 @@ fun App() {
                     }
 
                     else -> {
+                        chosen = (model.current?.let { listOf(it) } ?: emptyList()) + chosen
                         val currentIdx = model.order!!.first()
                         model.copy(
                             items = model.items.filterNot { it.id == currentIdx },
@@ -108,8 +112,17 @@ fun App() {
             Text("Next")
         }
         Box() {
-            FortuneWheel(model.items, model.order?.first())
+            FortuneWheel(
+                model.items,
+                model.order?.first(),
+            )
         }
+
+//        Column {
+//            chosen.forEach {
+//                Text(it.name)
+//            }
+//        }
     }
 }
 
