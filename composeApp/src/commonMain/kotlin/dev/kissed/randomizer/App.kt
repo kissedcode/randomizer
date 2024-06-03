@@ -216,7 +216,7 @@ private fun BoxScope.FortuneWheel(items: List<Member>, currentId: Int?) {
                         .padding(end = 30.dp),
                     color = Color.White,
                     fontWeight = if (current) FontWeight.ExtraBold else FontWeight.Medium,
-                    fontSize = if (current) 18.sp else 15.sp,
+                    fontSize = if (current) 20.sp else 15.sp,
                 )
             }
         }
