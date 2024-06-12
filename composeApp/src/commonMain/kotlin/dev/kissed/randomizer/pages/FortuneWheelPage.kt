@@ -17,9 +17,14 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.DisposableEffectResult
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -52,21 +57,29 @@ private data class WheelModel(
 }
 
 @Composable
-fun BoxScope.FortuneWheel(items: List<Member>, currentId: Int?) {
+fun BoxScope.FortuneWheel(items: List<Member>, currentId: Int?, onRotationFinished: () -> Unit) {
     val scope = rememberCoroutineScope()
-    val wheelModel = remember(currentId) { WheelModel(items, currentId) }
+    val wheelModel = remember(items, currentId) { WheelModel(items, currentId) }
     val rotationAnim = remember { Animatable(0f) }
+    var rotationStarted by remember(currentId) { mutableStateOf(false) }
 
     LaunchedEffect(currentId) {
         wheelModel.currentIdx ?: return@LaunchedEffect
+        
         val targetAngle = -wheelModel.angles[wheelModel.currentIdx].let { (it.first + it.second)/2 }
-        rotationAnim.animateTo(
-            targetAngle + rotationAnim.value - (rotationAnim.value.mod(360f)) + 360 * 5,
-            animationSpec = spring(
-                dampingRatio = Spring.DampingRatioHighBouncy,
-                stiffness = Spring.StiffnessLow,
+
+        rotationStarted = true
+        scope.launch {
+            rotationAnim.animateTo(
+                targetAngle + rotationAnim.value - (rotationAnim.value.mod(360f)) + 360 * 5,
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioHighBouncy,
+                    stiffness = Spring.StiffnessLow,
+                )
             )
-        )
+
+            onRotationFinished()
+        }
     }
 
     Box(
@@ -86,7 +99,7 @@ fun BoxScope.FortuneWheel(items: List<Member>, currentId: Int?) {
                     )
                 }
             }
-            .pointerInput(Unit) {
+            .pointerInput(currentId) {
                 val midX = this.size.width / 2
                 val velocityTracker = VelocityTracker()
                 var direction: Float = 1f
@@ -99,12 +112,15 @@ fun BoxScope.FortuneWheel(items: List<Member>, currentId: Int?) {
                         scope.launch {
                             val delta = it.position - it.previousPosition
                             direction = (it.position.x > midX).let { if (it) +1f else -1f }
+                            
+                            if (rotationStarted) onRotationFinished()
                             rotationAnim.snapTo(rotationAnim.value + delta.y / 2 * direction)
                         }
                     }
 
                     val velocity = velocityTracker.calculateVelocity()
                     scope.launch {
+                        if (rotationStarted) onRotationFinished()
                         rotationAnim.animateDecay(velocity.y * direction, exponentialDecay(0.5f))
                     }
                 }
