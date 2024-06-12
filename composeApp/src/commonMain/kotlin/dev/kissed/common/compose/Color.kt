@@ -1,4 +1,4 @@
-package dev.kissed.utils
+package dev.kissed.common.compose
 
 import androidx.compose.ui.graphics.Color
 import kotlin.random.Random

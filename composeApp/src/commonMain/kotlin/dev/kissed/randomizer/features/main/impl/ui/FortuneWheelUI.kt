@@ -1,9 +1,11 @@
-package dev.kissed.randomizer.pages
+package dev.kissed.randomizer.features.main.impl.ui
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.exponentialDecay
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -17,8 +19,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.DisposableEffectResult
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -57,7 +57,7 @@ private data class WheelModel(
 }
 
 @Composable
-fun BoxScope.FortuneWheel(items: List<Member>, currentId: Int?, onRotationFinished: () -> Unit) {
+internal fun BoxScope.FortuneWheel(items: List<Member>, currentId: Int?, onRotationFinished: () -> Unit) {
     val scope = rememberCoroutineScope()
     val wheelModel = remember(items, currentId) { WheelModel(items, currentId) }
     val rotationAnim = remember { Animatable(0f) }
@@ -71,10 +71,11 @@ fun BoxScope.FortuneWheel(items: List<Member>, currentId: Int?, onRotationFinish
         rotationStarted = true
         scope.launch {
             rotationAnim.animateTo(
-                targetAngle + rotationAnim.value - (rotationAnim.value.mod(360f)) + 360 * 5,
+                targetAngle + rotationAnim.value - (rotationAnim.value.mod(360f)) + 360 * 50,
                 animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioHighBouncy,
-                    stiffness = Spring.StiffnessLow,
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessMediumLow,
+                    visibilityThreshold = 1f,
                 )
             )
 
