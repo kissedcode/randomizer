@@ -1,6 +1,6 @@
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.ComposeViewport
-import dev.kissed.randomizer.App
+import dev.kissed.randomizer.app.App
 import kotlinx.browser.document
 
 @OptIn(ExperimentalComposeUiApi::class)

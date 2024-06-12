@@ -1,34 +1,25 @@
-package dev.kissed.randomizer
+package dev.kissed.randomizer.pages
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.exponentialDecay
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.drag
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -41,90 +32,11 @@ import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.kissed.randomizer.model.Member
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import randomizer.composeapp.generated.resources.Res
 import randomizer.composeapp.generated.resources.spiral
-import kotlin.random.Random
-
-private data class Member(
-    val id: Int,
-    val name: String,
-    val color: Color,
-)
-
-private val members = listOf("Денис", "Егор", "Ваня С.", "Ваня М.", "Женя", "Эмиль")
-    .mapIndexed { idx, name ->
-        Member(
-            id = idx,
-            name = name,
-            color = Color(Random.nextFloat(), Random.nextFloat(), Random.nextFloat()),
-        )
-    }
-
-private data class ItemsModel(
-    val items: List<Member>,
-    val order: List<Int>?,
-) {
-    val currentId: Int? = order?.first()
-    val current: Member? = currentId?.let { items.first { it.id == currentId } }
-}
-
-@Composable
-@Preview
-fun App() {
-    var model by remember { mutableStateOf(ItemsModel(members, order = null)) }
-    var chosen by remember { mutableStateOf<List<Member>>(emptyList()) }
-    
-    Column(
-        Modifier.fillMaxSize()
-            .background(Color.White),
-        verticalArrangement = Arrangement.spacedBy(20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            "Колесо закрутится - ситдаун замутится",
-            Modifier
-                .padding(top = 50.dp),
-            fontSize = 20.sp,
-        )
-        Button(
-            onClick = {
-                model = when {
-                    model.items.size <= 1 -> return@Button
-                    model.order == null -> {
-                        model.copy(order = model.items.indices.toMutableList().shuffled())
-                    }
-
-                    else -> {
-                        chosen = (model.current?.let { listOf(it) } ?: emptyList()) + chosen
-                        val currentIdx = model.order!!.first()
-                        model.copy(
-                            items = model.items.filterNot { it.id == currentIdx },
-                            order = model.order!!.drop(1)
-                        )
-                    }
-                }
-            },
-            colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)
-        ) {
-            Text("Next")
-        }
-        Box() {
-            FortuneWheel(
-                model.items,
-                model.order?.first(),
-            )
-        }
-
-//        Column {
-//            chosen.forEach {
-//                Text(it.name)
-//            }
-//        }
-    }
-}
 
 private data class WheelModel(
     val items: List<Member>,
@@ -137,11 +49,10 @@ private data class WheelModel(
         }
     }
     val currentIdx: Int? = currentId?.let { items.indexOfFirst { it.id == currentId } }
-    val current: Member? = currentId?.let { items.first { it.id == currentId } }
 }
 
 @Composable
-private fun BoxScope.FortuneWheel(items: List<Member>, currentId: Int?) {
+fun BoxScope.FortuneWheel(items: List<Member>, currentId: Int?) {
     val scope = rememberCoroutineScope()
     val wheelModel = remember(currentId) { WheelModel(items, currentId) }
     val rotationAnim = remember { Animatable(0f) }
@@ -179,7 +90,7 @@ private fun BoxScope.FortuneWheel(items: List<Member>, currentId: Int?) {
                 val midX = this.size.width / 2
                 val velocityTracker = VelocityTracker()
                 var direction: Float = 1f
-                
+
                 awaitEachGesture {
                     val down = awaitFirstDown()
                     velocityTracker.resetTracking()
@@ -191,9 +102,9 @@ private fun BoxScope.FortuneWheel(items: List<Member>, currentId: Int?) {
                             rotationAnim.snapTo(rotationAnim.value + delta.y / 2 * direction)
                         }
                     }
-                    
+
                     val velocity = velocityTracker.calculateVelocity()
-                    scope.launch { 
+                    scope.launch {
                         rotationAnim.animateDecay(velocity.y * direction, exponentialDecay(0.5f))
                     }
                 }
@@ -208,7 +119,7 @@ private fun BoxScope.FortuneWheel(items: List<Member>, currentId: Int?) {
             Box(
                 Modifier.matchParentSize().rotate(wheelModel.angles[idx].let { (it.first + it.second)/2 })
             ) {
-                val current = idx == wheelModel.currentIdx
+                val current = (idx == wheelModel.currentIdx)
                 Text(
                     member.name,
                     modifier = Modifier

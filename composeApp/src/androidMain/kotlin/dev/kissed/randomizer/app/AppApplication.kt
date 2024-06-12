@@ -1,4 +1,4 @@
-package dev.kissed.randomizer
+package dev.kissed.randomizer.app
 
 import android.app.Application
 
