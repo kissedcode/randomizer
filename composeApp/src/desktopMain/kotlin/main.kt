@@ -9,21 +9,24 @@ import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
 import dev.kissed.randomizer.app.App
+import dev.kissed.randomizer.features.app.api.AppFeature
 
 fun main() = application {
     val state: WindowState by remember {
         mutableStateOf(
             WindowState(
                 position = WindowPosition(Alignment.TopStart),
-                size = DpSize(1000.dp, 1000.dp),
+//                size = DpSize(1000.dp, 1000.dp),
             )
         )
     } 
+    val appFeature = AppFeature.createImpl()
+    
     Window(
         state = state,
         onCloseRequest = ::exitApplication,
         title = "randomizer",
     ) {
-        App()
+        App(appFeature)
     }
 }

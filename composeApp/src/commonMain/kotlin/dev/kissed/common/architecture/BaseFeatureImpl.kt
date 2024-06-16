@@ -23,4 +23,7 @@ abstract class BaseFeatureImpl<STATE : Any, ACTION : Any>(initialState: STATE) :
     }
 
     open fun onStarted() {}
+
+    override fun dispatch(action: ACTION) {
+    }
 }

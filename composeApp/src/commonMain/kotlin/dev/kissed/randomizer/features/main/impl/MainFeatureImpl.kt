@@ -17,6 +17,7 @@ internal class MainFeatureImpl : MainFeature, BaseFeatureImpl<State, Action>(
             currentPos = null,
             currentChosen = false,
             itemsHidden = emptySet(),
+            page = MainFeature.Page.WHEEL,
         )    
     }
 ) {
@@ -40,7 +41,7 @@ internal class MainFeatureImpl : MainFeature, BaseFeatureImpl<State, Action>(
                 }
             }
 
-            Action.RotationFinished -> {
+            Action.NextAnimationFinished -> {
                 state = state.copy(currentChosen = true)
             }
 

@@ -1,5 +1,6 @@
 package dev.kissed.randomizer.features.main.api.ui
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,7 +25,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.kissed.randomizer.features.main.api.MainFeature
-import dev.kissed.randomizer.features.main.impl.ui.FortuneWheel
+import dev.kissed.randomizer.features.main.impl.ui.pages.FortuneWheelPageUI
+import dev.kissed.randomizer.features.main.impl.ui.pages.SimplePageUI
 
 @Composable
 fun MainFeatureUI(feature: MainFeature) {
@@ -50,14 +52,31 @@ fun MainFeatureUI(feature: MainFeature) {
         ) {
             Text("Next")
         }
-        Box() {
-            FortuneWheel(
-                state.itemsList.filterNot { it.id in state.itemsHidden },
-                state.currentId,
-                onRotationFinished = {
-                    feature.dispatch(MainFeature.Action.RotationFinished)
+        AnimatedContent(state.page) {
+            Box {
+                when (it) {
+                    MainFeature.Page.WHEEL -> {
+                        FortuneWheelPageUI(
+                            state.itemsList.filterNot { it.id in state.itemsHidden },
+                            state.currentId,
+                            onNextAniationFinished = {
+                                feature.dispatch(MainFeature.Action.NextAnimationFinished)
+                            }
+                        )
+                    }
+
+                    MainFeature.Page.SIMPLE -> {
+                        val items = state.itemsList.filterNot { it.id in state.itemsHidden }
+                        SimplePageUI(
+                            items,
+                            currentIdx = items.indexOfFirst { it.id == state.currentId }.takeIf { it >= 0 },
+                            onNextAniationFinished = {
+                                feature.dispatch(MainFeature.Action.NextAnimationFinished)
+                            }
+                        )
+                    }
                 }
-            )
+            }
         }
 
         Text("Input:", fontWeight = FontWeight.ExtraBold)

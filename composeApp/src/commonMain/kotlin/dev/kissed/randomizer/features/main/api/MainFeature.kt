@@ -6,12 +6,18 @@ import dev.kissed.randomizer.model.Member
 
 interface MainFeature : BaseFeature<MainFeature.State, MainFeature.Action> {
     
+    enum class Page {
+        WHEEL,
+        SIMPLE,
+    }
+    
     data class State(
         val itemsList: List<Member>,
         val order: List<Int>,
         val itemsHidden: Set<Int>,
         val currentPos: Int?,
         val currentChosen: Boolean,
+        val page: Page,
     ) {
         private val itemsMap: Map<Int, Member> = itemsList.associateBy { it.id }
         
@@ -25,7 +31,7 @@ interface MainFeature : BaseFeature<MainFeature.State, MainFeature.Action> {
     
     sealed interface Action {
         data object NextClick : Action
-        data object RotationFinished : Action
+        data object NextAnimationFinished : Action
         data class InputChanged(val text: String) : Action
     }
     
