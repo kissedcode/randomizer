@@ -44,14 +44,14 @@ fun MainFeatureUI(feature: MainFeature) {
                 .padding(top = 50.dp),
             fontSize = 20.sp,
         )
-        Button(
-            onClick = {
-                feature.dispatch(MainFeature.Action.NextClick)
-            },
-            colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)
-        ) {
-            Text("Next")
-        }
+//        Button(
+//            onClick = {
+//                feature.dispatch(MainFeature.Action.Next)
+//            },
+//            colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)
+//        ) {
+//            Text("Next")
+//        }
         AnimatedContent(state.page) {
             Box {
                 when (it) {
@@ -59,7 +59,10 @@ fun MainFeatureUI(feature: MainFeature) {
                         FortuneWheelPageUI(
                             state.itemsList.filterNot { it.id in state.itemsHidden },
                             state.currentId,
-                            onNextAniationFinished = {
+                            onNextTrigger = {
+                                feature.dispatch(MainFeature.Action.Next)
+                            },
+                            onNextAnimationFinished = {
                                 feature.dispatch(MainFeature.Action.NextAnimationFinished)
                             }
                         )

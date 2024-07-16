@@ -23,7 +23,7 @@ internal class MainFeatureImpl : MainFeature, BaseFeatureImpl<State, Action>(
 ) {
     override fun dispatch(action: Action) {
         when (action) {
-            Action.NextClick -> {
+            Action.Next -> {
                 val currentPos = state.currentPos
                 state = when {
                     state.itemsHidden.size == state.itemsList.size - 1 -> state

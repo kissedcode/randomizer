@@ -30,7 +30,7 @@ interface MainFeature : BaseFeature<MainFeature.State, MainFeature.Action> {
     }
     
     sealed interface Action {
-        data object NextClick : Action
+        data object Next : Action
         data object NextAnimationFinished : Action
         data class InputChanged(val text: String) : Action
     }

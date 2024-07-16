@@ -1,6 +1,5 @@
 package dev.kissed.randomizer.features.main.impl.ui.pages
 
-import androidx.compose.animation.SplineBasedFloatDecayAnimationSpec
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.exponentialDecay
@@ -31,18 +30,18 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.PointMode
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.util.VelocityTracker
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.kissed.common.util.toFloat
 import dev.kissed.randomizer.features.main.impl.ui.pages.Line.Companion.intersection
 import dev.kissed.randomizer.model.Member
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import randomizer.composeapp.generated.resources.Res
@@ -64,12 +63,20 @@ private data class WheelModel(
     val currentIdx: Int? = currentId?.let { items.indexOfFirst { it.id == currentId } }
 }
 
+private const val VELOCITY_THRESHOLD_NEXT_HIGH = 13000f
+private const val VELOCITY_THRESHOLD_NEXT_LOW = 5000f
+
 @Composable
-internal fun BoxScope.FortuneWheelPageUI(items: List<Member>, currentId: Int?, onNextAniationFinished: () -> Unit) {
+internal fun BoxScope.FortuneWheelPageUI(
+    items: List<Member>, currentId: Int?,
+    onNextTrigger: () -> Unit,
+    onNextAnimationFinished: () -> Unit,
+) {
     val scope = rememberCoroutineScope()
     val wheelModel = remember(items, currentId) { WheelModel(items, currentId) }
     val rotationAnim = remember { Animatable(0f) }
     var rotationStarted by remember(currentId) { mutableStateOf(false) }
+    var alertText by remember { mutableStateOf("") }
 
     LaunchedEffect(currentId) {
         wheelModel.currentIdx ?: return@LaunchedEffect
@@ -87,7 +94,7 @@ internal fun BoxScope.FortuneWheelPageUI(items: List<Member>, currentId: Int?, o
                 )
             )
 
-            onNextAniationFinished()
+            onNextAnimationFinished()
         }
     }
 
@@ -180,16 +187,33 @@ internal fun BoxScope.FortuneWheelPageUI(items: List<Member>, currentId: Int?, o
                                 }
                                 
                                 scope.launch {
-                                    if (rotationStarted) onNextAniationFinished()
+                                    if (rotationStarted) onNextAnimationFinished()
                                     rotationAnim.snapTo(rotationAnim.value + rotation * (!clockwise).toFloat())
                                 }
                             }
                         }
 
                         val velocity = velocityTracker.calculateVelocity()
+                        val velocityAbs = velocity.abs()
+                        println("velocity: ${velocityAbs}")
+
+                        when {
+                            velocityAbs > VELOCITY_THRESHOLD_NEXT_HIGH -> {
+                                onNextTrigger()
+                            }
+
+                            velocityAbs > VELOCITY_THRESHOLD_NEXT_LOW -> {
+                                scope.launch {
+                                    alertText = "Кашу чтоли не ел? Крути сильнее!"
+                                    delay(1000)
+                                    alertText = ""
+                                }
+                            }
+                        }
+
                         scope.launch {
-                            if (rotationStarted) onNextAniationFinished()
-                            rotationAnim.animateDecay(velocity.abs() * (!clockwise).toFloat(), exponentialDecay(0.9f))
+                            if (rotationStarted) onNextAnimationFinished()
+                            rotationAnim.animateDecay(velocityAbs * (!clockwise).toFloat(), exponentialDecay(0.9f))
                         }
                     }
                 }
@@ -205,6 +229,15 @@ internal fun BoxScope.FortuneWheelPageUI(items: List<Member>, currentId: Int?, o
             .offset(x = -radius),
         contentDescription = null,
         colorFilter = ColorFilter.lighting(Color.Black, Color.Black)
+    )
+
+    Text(
+        alertText,
+        Modifier.align(Alignment.Center),
+        textAlign = TextAlign.Center,
+        fontSize = 70.sp,
+        color = Color.Red,
+        fontWeight = FontWeight.ExtraBold,
     )
 }
 
