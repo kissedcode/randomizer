@@ -44,14 +44,14 @@ fun MainFeatureUI(feature: MainFeature) {
                 .padding(top = 50.dp),
             fontSize = 20.sp,
         )
-//        Button(
-//            onClick = {
-//                feature.dispatch(MainFeature.Action.Next)
-//            },
-//            colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)
-//        ) {
-//            Text("Next")
-//        }
+        Button(
+            onClick = {
+                feature.dispatch(MainFeature.Action.Next)
+            },
+            colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)
+        ) {
+            Text("Next")
+        }
         AnimatedContent(state.page) {
             Box {
                 when (it) {
