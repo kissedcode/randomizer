@@ -2,6 +2,7 @@ package dev.kissed.randomizer.features.main.api
 
 import dev.kissed.common.architecture.BaseFeature
 import dev.kissed.randomizer.features.main.impl.MainFeatureImpl
+import dev.kissed.randomizer.features.main.impl.data.InputRepository
 import dev.kissed.randomizer.model.Member
 
 interface MainFeature : BaseFeature<MainFeature.State, MainFeature.Action> {
@@ -36,8 +37,9 @@ interface MainFeature : BaseFeature<MainFeature.State, MainFeature.Action> {
     }
     
     companion object {
-        fun createImpl(): MainFeature {
-            return MainFeatureImpl()
+        
+        fun createImpl(inputRepository: InputRepository): MainFeature {
+            return MainFeatureImpl(inputRepository)
         }
     }
 }

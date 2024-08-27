@@ -1,7 +1,10 @@
 package dev.kissed.randomizer.features.main.api.ui
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,7 +16,6 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,10 +30,9 @@ import dev.kissed.randomizer.features.main.api.MainFeature
 import dev.kissed.randomizer.features.main.impl.ui.pages.FortuneWheelPageUI
 import dev.kissed.randomizer.features.main.impl.ui.pages.SimplePageUI
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun MainFeatureUI(feature: MainFeature) {
-    val state by feature.states.collectAsState()
-
+fun MainFeatureUI(state: MainFeature.State, dispatch: (MainFeature.Action) -> Unit) {
     Column(
         Modifier.fillMaxSize()
             .background(Color.White),
@@ -41,12 +42,21 @@ fun MainFeatureUI(feature: MainFeature) {
         Text(
             "Колесо закрутится - ситдаун замутится",
             Modifier
-                .padding(top = 50.dp),
+                .padding(top = 50.dp)
+                .combinedClickable(
+                    enabled = true,
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onLongClick = {
+                        dispatch(MainFeature.Action.InputChanged(ALPHA_TEAM_HARDCODE))
+                    },
+                    onClick = {},
+                ),
             fontSize = 20.sp,
         )
         Button(
             onClick = {
-                feature.dispatch(MainFeature.Action.Next)
+                dispatch(MainFeature.Action.Next)
             },
             colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)
         ) {
@@ -60,10 +70,10 @@ fun MainFeatureUI(feature: MainFeature) {
                             state.itemsList.filterNot { it.id in state.itemsHidden },
                             state.currentId,
                             onNextTrigger = {
-                                feature.dispatch(MainFeature.Action.Next)
+                                dispatch(MainFeature.Action.Next)
                             },
                             onNextAnimationFinished = {
-                                feature.dispatch(MainFeature.Action.NextAnimationFinished)
+                                dispatch(MainFeature.Action.NextAnimationFinished)
                             }
                         )
                     }
@@ -74,7 +84,7 @@ fun MainFeatureUI(feature: MainFeature) {
                             items,
                             currentIdx = items.indexOfFirst { it.id == state.currentId }.takeIf { it >= 0 },
                             onNextAniationFinished = {
-                                feature.dispatch(MainFeature.Action.NextAnimationFinished)
+                                dispatch(MainFeature.Action.NextAnimationFinished)
                             }
                         )
                     }
@@ -83,12 +93,12 @@ fun MainFeatureUI(feature: MainFeature) {
         }
 
         Text("Input:", fontWeight = FontWeight.ExtraBold)
-        var itemsFieldState by remember { mutableStateOf(state.itemsList.map { it.name }.joinToString(separator = "\n")) }
+        var itemsFieldState by remember(state.itemsList) { mutableStateOf(state.itemsList.map { it.name }.joinToString(separator = "\n")) }
         TextField(
             value = itemsFieldState,
             onValueChange = {
                 itemsFieldState = it
-                feature.dispatch(MainFeature.Action.InputChanged(it))
+                dispatch(MainFeature.Action.InputChanged(it))
             },
         )
 
@@ -103,3 +113,13 @@ fun MainFeatureUI(feature: MainFeature) {
         }
     }
 }
+
+private val ALPHA_TEAM_HARDCODE = """
+    Денис
+    Женя
+    Ваня С.
+    Ваня М.
+    Эмиль
+    Егор
+    Бахтиёр
+""".trimIndent()

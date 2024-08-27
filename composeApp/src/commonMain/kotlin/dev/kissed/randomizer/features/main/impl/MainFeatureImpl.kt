@@ -5,12 +5,16 @@ import dev.kissed.common.compose.nextColor
 import dev.kissed.randomizer.features.main.api.MainFeature
 import dev.kissed.randomizer.features.main.api.MainFeature.Action
 import dev.kissed.randomizer.features.main.api.MainFeature.State
+import dev.kissed.randomizer.features.main.impl.data.InputRepository
 import dev.kissed.randomizer.model.Member
 import kotlin.random.Random
 
-internal class MainFeatureImpl : MainFeature, BaseFeatureImpl<State, Action>(
+internal class MainFeatureImpl(
+    private val inputRepository: InputRepository,
+) : MainFeature, BaseFeatureImpl<State, Action>(
     initialState = run {
-        val itemsList = parse(INITIAL_TEXT)
+        val initialInput = inputRepository.get() ?: INITIAL_INPUT
+        val itemsList = parse(initialInput)
         State(
             itemsList = itemsList,
             order = itemsList.indices.shuffled(),
@@ -46,10 +50,11 @@ internal class MainFeatureImpl : MainFeature, BaseFeatureImpl<State, Action>(
             }
 
             is Action.InputChanged -> {
-                val itemsList = parse(action.text)
+                inputRepository.save(action.text)
+                val newItems = parse(action.text)
                 state = state.copy(
-                    itemsList = itemsList,
-                    order = itemsList.indices.shuffled(),
+                    itemsList = newItems,
+                    order = newItems.indices.shuffled(),
                     currentPos = null,
                     currentChosen = false,
                     itemsHidden = emptySet(),
@@ -60,7 +65,8 @@ internal class MainFeatureImpl : MainFeature, BaseFeatureImpl<State, Action>(
 
     companion object {
 
-        private const val INITIAL_TEXT = "Денис\nЕгор\nВаня С.\nВаня М.\nЖеня\nЭмиль"
+        private val INITIAL_INPUT = (1..10).joinToString(separator = "\n") { it.toString() }
+        
         private fun parse(text: String): List<Member> {
             val parsed = text.split("\n")
                 .map { it.trim() }

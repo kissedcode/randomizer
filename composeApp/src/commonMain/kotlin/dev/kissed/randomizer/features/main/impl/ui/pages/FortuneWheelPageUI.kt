@@ -133,15 +133,14 @@ internal fun BoxScope.FortuneWheelPageUI(
                 Box(
                     Modifier.matchParentSize().rotate(wheelModel.angles[idx].let { (it.first + it.second) / 2 })
                 ) {
-                    val current = (idx == wheelModel.currentIdx)
                     Text(
                         member.name,
                         modifier = Modifier
                             .align(Alignment.CenterEnd)
                             .padding(end = 30.dp),
                         color = Color.White,
-                        fontWeight = if (current) FontWeight.ExtraBold else FontWeight.Medium,
-                        fontSize = if (current) 20.sp else 15.sp,
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 15.sp,
                     )
                 }
             }

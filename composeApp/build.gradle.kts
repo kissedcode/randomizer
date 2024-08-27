@@ -1,14 +1,17 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidApplication)
-    alias(libs.plugins.jetbrainsCompose)
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.jetbrains.compose)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.google.devtools.ksp)
 }
 
 kotlin {
@@ -63,9 +66,29 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+            implementation(libs.russhwolf.settings)
+            implementation(libs.tatarka.kotlininject.runtimekmp)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
+        }
+    }
+
+    configureCommonMainKsp()
+}
+
+dependencies {
+    kspCommonMainMetadata(libs.tatarka.kotlininject.compilerksp)
+}
+
+fun KotlinMultiplatformExtension.configureCommonMainKsp() {
+    sourceSets.named("commonMain").configure {
+        kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
+    }
+
+    project.tasks.withType(KotlinCompilationTask::class.java).configureEach {
+        if (name != "kspCommonMainKotlinMetadata") {
+            dependsOn("kspCommonMainKotlinMetadata")
         }
     }
 }
