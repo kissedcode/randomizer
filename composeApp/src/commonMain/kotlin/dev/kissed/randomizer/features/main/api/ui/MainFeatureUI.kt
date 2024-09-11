@@ -3,8 +3,6 @@ package dev.kissed.randomizer.features.main.api.ui
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,16 +40,7 @@ fun MainFeatureUI(state: MainFeature.State, dispatch: (MainFeature.Action) -> Un
         Text(
             "Колесо закрутится - ситдаун замутится",
             Modifier
-                .padding(top = 50.dp)
-                .combinedClickable(
-                    enabled = true,
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null,
-                    onLongClick = {
-                        dispatch(MainFeature.Action.InputChanged(ALPHA_TEAM_HARDCODE))
-                    },
-                    onClick = {},
-                ),
+                .padding(top = 50.dp),
             fontSize = 20.sp,
         )
         Button(
@@ -93,7 +82,7 @@ fun MainFeatureUI(state: MainFeature.State, dispatch: (MainFeature.Action) -> Un
         }
 
         Text("Input:", fontWeight = FontWeight.ExtraBold)
-        var itemsFieldState by remember { mutableStateOf(state.input) }
+        var itemsFieldState by remember(state.input) { mutableStateOf(state.input) }
         TextField(
             value = itemsFieldState,
             onValueChange = {
@@ -113,13 +102,3 @@ fun MainFeatureUI(state: MainFeature.State, dispatch: (MainFeature.Action) -> Un
         }
     }
 }
-
-private val ALPHA_TEAM_HARDCODE = """
-    Денис
-    Женя
-    Ваня С.
-    Ваня М.
-    Эмиль
-    Егор
-    Бахтиёр
-""".trimIndent()

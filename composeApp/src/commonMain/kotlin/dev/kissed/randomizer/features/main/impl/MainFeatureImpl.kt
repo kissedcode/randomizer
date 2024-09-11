@@ -51,23 +51,43 @@ internal class MainFeatureImpl(
             }
 
             is Action.InputChanged -> {
-                inputRepository.save(action.text)
-                val newItems = parse(action.text)
-                state = state.copy(
-                    input = action.text,
-                    itemsList = newItems,
-                    order = newItems.indices.shuffled(),
-                    currentPos = null,
-                    currentChosen = false,
-                    itemsHidden = emptySet(),
-                )
+                if (action.text.contains(CHEATCODE)) {
+                    changeInput(ALPHA_TEAM_HARDCODE)
+                } else {
+                    changeInput(action.text)
+                }
             }
         }
+    }
+
+    private fun changeInput(newInput: String) {
+        inputRepository.save(newInput)
+        val newItems = parse(newInput)
+        state = state.copy(
+            input = newInput,
+            itemsList = newItems,
+            order = newItems.indices.shuffled(),
+            currentPos = null,
+            currentChosen = false,
+            itemsHidden = emptySet(),
+        )
     }
 
     companion object {
 
         private val INITIAL_INPUT = (1..10).joinToString(separator = "\n") { it.toString() }
+
+        private val CHEATCODE = "iddqd"
+        
+        private val ALPHA_TEAM_HARDCODE = """
+            Денис
+            Женя
+            Ваня С.
+            Ваня М.
+            Эмиль
+            Егор
+            Бахтиёр
+        """.trimIndent()
         
         private fun parse(text: String): List<Member> {
             val parsed = text.split("\n")
@@ -81,3 +101,4 @@ internal class MainFeatureImpl(
         }
     }
 }
+
