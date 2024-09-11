@@ -16,6 +16,7 @@ internal class MainFeatureImpl(
         val initialInput = inputRepository.get() ?: INITIAL_INPUT
         val itemsList = parse(initialInput)
         State(
+            input = initialInput,
             itemsList = itemsList,
             order = itemsList.indices.shuffled(),
             currentPos = null,
@@ -53,6 +54,7 @@ internal class MainFeatureImpl(
                 inputRepository.save(action.text)
                 val newItems = parse(action.text)
                 state = state.copy(
+                    input = action.text,
                     itemsList = newItems,
                     order = newItems.indices.shuffled(),
                     currentPos = null,

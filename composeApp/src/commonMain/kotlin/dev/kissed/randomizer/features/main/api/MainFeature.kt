@@ -14,6 +14,7 @@ interface MainFeature : BaseFeature<MainFeature.State, MainFeature.Action> {
     
     data class State(
         val itemsList: List<Member>,
+        val input: String,
         val order: List<Int>,
         val itemsHidden: Set<Int>,
         val currentPos: Int?,

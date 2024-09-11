@@ -93,7 +93,7 @@ fun MainFeatureUI(state: MainFeature.State, dispatch: (MainFeature.Action) -> Un
         }
 
         Text("Input:", fontWeight = FontWeight.ExtraBold)
-        var itemsFieldState by remember(state.itemsList) { mutableStateOf(state.itemsList.map { it.name }.joinToString(separator = "\n")) }
+        var itemsFieldState by remember { mutableStateOf(state.input) }
         TextField(
             value = itemsFieldState,
             onValueChange = {
