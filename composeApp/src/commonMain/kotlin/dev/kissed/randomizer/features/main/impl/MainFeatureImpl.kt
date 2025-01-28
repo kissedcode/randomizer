@@ -1,13 +1,12 @@
 package dev.kissed.randomizer.features.main.impl
 
+import androidx.compose.ui.graphics.Color
 import dev.kissed.common.architecture.BaseFeatureImpl
-import dev.kissed.common.compose.nextColor
 import dev.kissed.randomizer.features.main.api.MainFeature
 import dev.kissed.randomizer.features.main.api.MainFeature.Action
 import dev.kissed.randomizer.features.main.api.MainFeature.State
 import dev.kissed.randomizer.features.main.impl.data.InputRepository
 import dev.kissed.randomizer.model.Member
-import kotlin.random.Random
 
 internal class MainFeatureImpl(
     private val inputRepository: InputRepository,
@@ -88,6 +87,15 @@ internal class MainFeatureImpl(
             Егор
             Бахтиёр
         """.trimIndent()
+
+        private val colors: List<Color> = listOf(
+            Color(0xFFFF5252), // Красный (vibrant pastel red)
+            Color(0xFFFFA726), // Оранжевый (vibrant pastel orange)
+            Color(0xFFFFEE58), // Желтый (vibrant pastel yellow)
+            Color(0xFF66BB6A), // Зеленый (vibrant pastel green)
+            Color(0xFF5C6BC0), // Синий (vibrant pastel indigo)
+            Color(0xFFAB47BC)  // Фиолетовый (vibrant pastel violet)
+        )
         
         private fun parse(text: String): List<Member> {
             val parsed = text.split("\n")
@@ -95,7 +103,7 @@ internal class MainFeatureImpl(
                 .filterNot { it.isBlank() }
 
             val itemsList = parsed.mapIndexed { idx, item ->
-                Member(id = idx, name = item, color = Random.nextColor())
+                Member(id = idx, name = item, color = colors[idx.mod(colors.size)])
             }
             return itemsList
         }
