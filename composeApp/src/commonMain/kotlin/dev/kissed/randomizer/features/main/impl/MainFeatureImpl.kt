@@ -85,6 +85,7 @@ internal class MainFeatureImpl(
             Ваня М.
             Эмиль
             Егор
+            Булат
         """.trimIndent()
 
         private val colors: List<Color> = listOf(
