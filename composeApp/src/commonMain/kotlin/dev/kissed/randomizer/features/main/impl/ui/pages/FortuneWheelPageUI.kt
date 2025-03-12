@@ -52,7 +52,7 @@ import kotlin.random.Random
 import androidx.core.graphics.ColorUtils
 
 private fun getContrastingColor(background: Color): Color {
-    val luminance = ColorUtils.calculateLuminance(background.toArgb())
+    val luminance = ColorUtils.calculateLuminance(background.value.toInt())
     return if (luminance > 0.5) Color.Black else Color.White
 }
 
