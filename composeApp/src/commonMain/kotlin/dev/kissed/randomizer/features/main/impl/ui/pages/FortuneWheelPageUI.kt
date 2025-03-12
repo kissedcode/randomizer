@@ -49,11 +49,10 @@ import randomizer.composeapp.generated.resources.spiral
 import kotlin.math.PI
 import kotlin.math.acos
 import kotlin.random.Random
-import androidx.core.graphics.ColorUtils
 
 private fun getContrastingColor(background: Color): Color {
-    val luminance = ColorUtils.calculateLuminance(background.value.toInt())
-    return if (luminance > 0.5) Color.Black else Color.White
+    val brightness = (background.red * 299 + background.green * 587 + background.blue * 114) / 1000
+    return if (brightness > 0.8) Color.Black else Color.White
 }
 
 private data class WheelModel(
