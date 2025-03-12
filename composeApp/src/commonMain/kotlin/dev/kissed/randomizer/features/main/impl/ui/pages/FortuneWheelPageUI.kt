@@ -49,6 +49,12 @@ import randomizer.composeapp.generated.resources.spiral
 import kotlin.math.PI
 import kotlin.math.acos
 import kotlin.random.Random
+import androidx.core.graphics.ColorUtils
+
+private fun getContrastingColor(background: Color): Color {
+    val luminance = ColorUtils.calculateLuminance(background.toArgb())
+    return if (luminance > 0.5) Color.Black else Color.White
+}
 
 private data class WheelModel(
     val items: List<Member>,
@@ -138,7 +144,7 @@ internal fun BoxScope.FortuneWheelPageUI(
                         modifier = Modifier
                             .align(Alignment.CenterEnd)
                             .padding(end = 30.dp),
-                        color = Color.White,
+                        color = getContrastingColor(member.color),
                         fontWeight = FontWeight.Medium,
                         fontSize = 15.sp,
                     )
